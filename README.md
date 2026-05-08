@@ -100,8 +100,8 @@ consolidation-planner/
 │   └── consolidation_screen.html      # HTML-прототип интерфейса (был изменен)
 └── assets/
     ├── erd_diagram.png                # ERD-диаграмма
-    ├── process_as_is.png              # BPMN диаграмма текущего процесса
-    └── process_to_be.png              # BPMN диаграмма целевого процесса
+    ├── process_as_is.svg              # BPMN диаграмма текущего процесса
+    └── process_to_be.svg              # BPMN диаграмма целевого процесса
 ```
 
 ---
