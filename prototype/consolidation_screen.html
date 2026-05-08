@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<!-- saved from url=(0074)file:///C:/Users/vnikolaeva/Downloads/consolidation_planner_prototype.html -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consolidation Planner — HTML demo</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: rgba(255,255,255,.9);
+      --ink: #142033;
+      --muted: #667085;
+      --line: #e4e9f2;
+      --blue: #2563eb;
+      --cyan: #06b6d4;
+      --green: #10b981;
+      --green-soft: #dcfce7;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 22px 70px rgba(15, 23, 42, .10);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(37,99,235,.12), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(16,185,129,.14), transparent 26%),
+        linear-gradient(135deg, #f8fbff 0%, #f4f7fb 45%, #effaf5 100%);
+    }
+    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    .sidebar {
+      position: sticky; top: 0; height: 100vh;
+      padding: 26px 22px;
+      background: linear-gradient(180deg, #0f172a 0%, #13213a 100%);
+      color: #fff;
+    }
+    .brand { display:flex; gap:12px; align-items:center; margin-bottom:32px; }
+    .logo {
+      width:46px; height:46px; border-radius:16px;
+      background: linear-gradient(135deg, #22c55e, #06b6d4 55%, #2563eb);
+      display:grid; place-items:center; font-weight:900;
+      box-shadow: 0 12px 30px rgba(6,182,212,.25);
+    }
+    .brand small { color:#9fb0ca; }
+    .nav { display:grid; gap:8px; }
+    .nav button {
+      text-align:left; border:0; cursor:pointer;
+      color:#cbd5e1; background:transparent;
+      padding:13px 14px; border-radius:15px; font-weight:650;
+    }
+    .nav button.active, .nav button:hover { background:rgba(255,255,255,.11); color:white; }
+    .main { padding: 28px 32px 56px; }
+    .top { display:flex; justify-content:space-between; gap:18px; align-items:flex-start; margin-bottom:20px; }
+    h1 { margin:0 0 8px; font-size:30px; letter-spacing:-.03em; }
+    h2 { margin:0 0 14px; font-size:18px; }
+    .sub { max-width:900px; color:var(--muted); font-size:14px; line-height:1.45; }
+    .actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    button, .btn {
+      border:0; border-radius:14px; padding:12px 15px;
+      cursor:pointer; font-weight:800; color:#102033;
+      background:#e9eef6; transition:.18s transform, .18s box-shadow, .18s background;
+    }
+    button:hover { transform: translateY(-1px); }
+    .primary {
+      color:white; background: linear-gradient(135deg, #2563eb, #06b6d4);
+      box-shadow: 0 12px 28px rgba(37,99,235,.22);
+    }
+    .success { color:white; background: linear-gradient(135deg, #10b981, #22c55e); }
+    .ghost { background:#fff; border:1px solid var(--line); }
+    .danger { color:#991b1b; background:#fee2e2; }
+    .kpis { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:16px; margin-bottom:18px; }
+    .card {
+      background: var(--card); backdrop-filter: blur(10px);
+      border:1px solid rgba(226,232,240,.95);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .kpi { padding:18px; }
+    .kpi .label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+    .kpi .value { margin-top:8px; font-size:27px; font-weight:900; letter-spacing:-.03em; }
+    .kpi .hint { margin-top:6px; font-size:12px; color:var(--muted); }
+    .grid { display:grid; grid-template-columns: minmax(640px,1.4fr) minmax(360px,.85fr); gap:18px; align-items:start; }
+    .panel { padding:18px; }
+    .filters { display:grid; grid-template-columns: 1.15fr .75fr .7fr .7fr .72fr; gap:10px; margin-bottom:12px; }
+    input, select {
+      width:100%; border:1px solid var(--line); border-radius:14px;
+      background:white; padding:12px; color:var(--ink); outline:none;
+      font: inherit; font-size:14px;
+    }
+    input:focus, select:focus { border-color:#60a5fa; box-shadow:0 0 0 4px rgba(96,165,250,.16); }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+    .table-wrap { max-height: 545px; overflow:auto; border:1px solid var(--line); border-radius:18px; background:white; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { padding:12px 10px; border-bottom:1px solid #edf2f7; text-align:left; vertical-align:middle; font-size:13px; }
+    th { position:sticky; top:0; z-index:1; background:#f8fafc; color:#475569; font-size:12px; }
+    tr:hover { background:#f8fbff; }
+    tr.disabled { opacity:.62; }
+    .check { width:18px; height:18px; accent-color: var(--blue); }
+    .pill { display:inline-flex; align-items:center; white-space:nowrap; border-radius:999px; padding:5px 9px; font-size:12px; font-weight:800; background:#e0f2fe; color:#0369a1; }
+    .pill.ready { background:#dcfce7; color:#166534; }
+    .pill.blocked { background:#f1f5f9; color:#64748b; }
+    .pill.bad { background:#fee2e2; color:#991b1b; }
+    .right { display:grid; gap:18px; }
+    .metric-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin:12px 0; }
+    .mini { background:#f8fafc; border:1px solid #e2e8f0; border-radius:16px; padding:12px; }
+    .mini b { display:block; font-size:18px; margin-top:4px; }
+    .mini span { color:var(--muted); font-size:12px; }
+    .meter-label { display:flex; justify-content:space-between; gap:10px; color:#475569; font-size:13px; margin:12px 0 7px; }
+    .meter { height:12px; border-radius:999px; background:#e2e8f0; overflow:hidden; }
+    .bar { height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,#22c55e,#06b6d4,#2563eb); transition:.25s; }
+    .bar.warn { background:linear-gradient(90deg,#f59e0b,#ef4444); }
+    .container-preview {
+      margin-top:15px; height:245px; border-radius:18px;
+      background:linear-gradient(180deg,#f8fafc,#e4edf8);
+      border:1px dashed #94a3b8; position:relative; overflow:hidden;
+    }
+    .container-preview:before {
+      content:"Условная 2D-схема контейнера";
+      position:absolute; left:14px; top:12px; color:#64748b; font-size:12px; font-weight:800;
+    }
+    .box {
+      position:absolute; border-radius:9px;
+      background: linear-gradient(135deg,#22c55e,#06b6d4 55%,#2563eb);
+      border:1px solid rgba(255,255,255,.7);
+      box-shadow:0 5px 14px rgba(37,99,235,.22);
+    }
+    .message { margin-top:14px; padding:12px; border-radius:16px; background:#eff6ff; color:#1e40af; font-weight:750; font-size:13px; line-height:1.4; }
+    .message.ok { background:#dcfce7; color:#166534; }
+    .message.warn { background:#fef3c7; color:#92400e; }
+    .message.bad { background:#fee2e2; color:#991b1b; }
+    .selected-list { max-height:220px; overflow:auto; display:grid; gap:8px; }
+    .sel-item { display:flex; justify-content:space-between; gap:10px; align-items:center; padding:11px; border-radius:14px; background:#f8fafc; border:1px solid #e2e8f0; font-size:13px; }
+    .sel-item small { color:#64748b; }
+    .empty { color:var(--muted); text-align:center; padding:26px 12px; }
+    .toast {
+      position:fixed; right:24px; bottom:24px; z-index:99;
+      background:#0f172a; color:white; padding:14px 16px;
+      border-radius:16px; box-shadow:var(--shadow);
+      opacity:0; transform:translateY(10px); transition:.25s;
+      max-width:420px; font-weight:750;
+    }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .modal {
+      position:fixed; inset:0; display:none; place-items:center; z-index:90;
+      background:rgba(15,23,42,.38); padding:24px;
+    }
+    .modal.show { display:grid; }
+    .modal-card { max-width:760px; width:100%; background:white; border-radius:24px; box-shadow:var(--shadow); padding:20px; }
+    pre { background:#0b1027; color:#dbeafe; border-radius:18px; padding:16px; overflow:auto; max-height:420px; }
+    @media (max-width:1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display:none; }
+      .grid, .kpis { grid-template-columns:1fr; }
+      .filters { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">CP</div>
+      <div><b>Consolidation Planner</b><br><small>B2B logistics demo</small></div>
+    </div>
+    <div class="nav">
+      <button class="active" onclick="toast(&#39;Раздел уже открыт&#39;)">Заказы к консолидации</button>
+      <button onclick="toast(&#39;Демо: справочник контейнеров уже используется в расчёте&#39;)">Контейнеры</button>
+      <button onclick="toast(&#39;Демо: история появится после формирования консолидации&#39;)">История расчётов</button>
+      <button onclick="toast(&#39;Демо: справочники поставщиков и товаров загружены&#39;)">Справочники</button>
+      <button onclick="toast(&#39;Демо: интеграция с 1С/API имитируется локальными данными&#39;)">Настройки API</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1>Консолидация грузов и расчёт загрузки контейнера</h1>
+        <div class="sub">
+          Прототип для менеджера ВЭД/логиста: выгрузка заказов по статусам, выбор готовых грузов,
+          расчёт загрузки 40DC или 20GP по объёму и весу, формирование сценария консолидации.
+          В консолидацию можно добавить только заказы со статусом <b>«Груз готов»</b>.
+        </div>
+      </div>
+      <div class="actions">
+        <button class="ghost" onclick="loadFromDb()">Выгрузить из БД</button>
+        <button class="primary" onclick="calculate(true)">Рассчитать загрузку</button>
+      </div>
+    </div>
+
+    <section class="kpis">
+      <div class="card kpi"><div class="label">Заказов в выборке</div><div class="value" id="kpiVisible">28</div><div class="hint">после фильтров</div></div>
+      <div class="card kpi"><div class="label">Готовы к консолидации</div><div class="value" id="kpiReady">28</div><div class="hint">статус «Груз готов»</div></div>
+      <div class="card kpi"><div class="label">Выбрано</div><div class="value" id="kpiSelected">0</div><div class="hint">заказов в сценарии</div></div>
+      <div class="card kpi"><div class="label">Итоговая загрузка</div><div class="value" id="kpiScore">0%</div><div class="hint">взвешенный показатель F</div></div>
+    </section>
+
+    <section class="grid">
+      <div class="card panel">
+        <h2>Пул заказов</h2>
+        <div class="filters">
+          <input id="search" placeholder="Поиск: номер, товар, SKU, поставщик" oninput="renderOrders()">
+          <select id="status" onchange="renderOrders()"><option value="">Все статусы</option><option value="Создан">Создан</option><option value="В работе">В работе</option><option value="Ожидает оплату">Ожидает оплату</option><option value="Изготовление">Изготовление</option><option value="Груз готов">Груз готов</option><option value="Бронирование">Бронирование</option><option value="В пути">В пути</option><option value="На таможне">На таможне</option><option value="Доставка">Доставка</option><option value="На складе">На складе</option><option value="Завершён">Завершён</option><option value="Отменён">Отменён</option></select>
+          <select id="port" onchange="renderOrders()"><option value="">Все порты</option><option>CNSHA</option><option>CNTAO</option><option>CNTXG</option></select>
+          <select id="supplier" onchange="renderOrders()"><option value="">Все поставщики</option><option value="Supplier_A">Supplier_A</option><option value="Supplier_B">Supplier_B</option><option value="Supplier_C">Supplier_C</option><option value="Supplier_D">Supplier_D</option><option value="Supplier_E">Supplier_E</option><option value="Supplier_F">Supplier_F</option><option value="Supplier_G">Supplier_G</option><option value="Supplier_H">Supplier_H</option><option value="Supplier_I">Supplier_I</option></select>
+          <input id="dateFrom" type="date" onchange="renderOrders()" title="Плановая дата отгрузки от">
+        </div>
+
+        <div class="toolbar">
+          <button class="success" onclick="showOnlyReady()">Показать только готовые к консолидации</button>
+          <button onclick="selectFilteredReady()">Выбрать готовые из фильтра</button>
+          <button onclick="selectOptimalSet()">Автоподбор до хорошей загрузки</button>
+          <button class="ghost" onclick="clearFilters()">Очистить фильтры</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th><th>Заказ</th><th>Статус</th><th>Порт</th><th>Дата</th><th>Поставщик</th><th>Товар</th><th>Кор.</th><th>Вес</th><th>Объём</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(1, this.checked)">
+      </td>
+      <td><b>ORD-2025-001</b><br><span style="color:#64748b">id: 1</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_A</td>
+      <td><b>Широкоформатный УФ-принтер WF-160</b><br><span style="color:#64748b">EQ-0001-UV · qty 1</span></td>
+      <td>2</td>
+      <td>5&nbsp;300 кг</td>
+      <td>14.000 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(2, this.checked)">
+      </td>
+      <td><b>ORD-2025-002</b><br><span style="color:#64748b">id: 2</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-06</td>
+      <td>Supplier_B</td>
+      <td><b>УФ-принтер гибридный HB-120</b><br><span style="color:#64748b">EQ-0002-UV · qty 1</span></td>
+      <td>2</td>
+      <td>2&nbsp;800 кг</td>
+      <td>7.680 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(3, this.checked)">
+      </td>
+      <td><b>ORD-2025-003</b><br><span style="color:#64748b">id: 3</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-06</td>
+      <td>Supplier_C</td>
+      <td><b>Сольвентный принтер SC-280</b><br><span style="color:#64748b">EQ-0003-SL · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;250 кг</td>
+      <td>7.812 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(4, this.checked)">
+      </td>
+      <td><b>ORD-2025-004</b><br><span style="color:#64748b">id: 4</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-03</td>
+      <td>Supplier_D</td>
+      <td><b>Фрезерный станок ЧПУ FR-2616</b><br><span style="color:#64748b">EQ-0004-FR · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;800 кг</td>
+      <td>4.933 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(5, this.checked)">
+      </td>
+      <td><b>ORD-2025-005</b><br><span style="color:#64748b">id: 5</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-07</td>
+      <td>Supplier_E</td>
+      <td><b>УФ-принтер планшетный UV-A1</b><br><span style="color:#64748b">EQ-0005-UV · qty 1</span></td>
+      <td>1</td>
+      <td>1&nbsp;300 кг</td>
+      <td>2.899 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(6, this.checked)">
+      </td>
+      <td><b>ORD-2025-006</b><br><span style="color:#64748b">id: 6</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-07</td>
+      <td>Supplier_A</td>
+      <td><b>Сольвентный принтер SC-230</b><br><span style="color:#64748b">EQ-0006-SL · qty 1</span></td>
+      <td>2</td>
+      <td>5&nbsp;500 кг</td>
+      <td>10.626 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(7, this.checked)">
+      </td>
+      <td><b>ORD-2025-007</b><br><span style="color:#64748b">id: 7</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-08</td>
+      <td>Supplier_B</td>
+      <td><b>Сольвентный принтер SC-280X</b><br><span style="color:#64748b">EQ-0007-SL · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;900 кг</td>
+      <td>5.544 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(8, this.checked)">
+      </td>
+      <td><b>ORD-2025-008</b><br><span style="color:#64748b">id: 8</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_C</td>
+      <td><b>ДТФ-принтер DTF-60</b><br><span style="color:#64748b">EQ-0008-DT · qty 1</span></td>
+      <td>2</td>
+      <td>2&nbsp;600 кг</td>
+      <td>2.508 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(9, this.checked)">
+      </td>
+      <td><b>ORD-2025-009</b><br><span style="color:#64748b">id: 9</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-07</td>
+      <td>Supplier_D</td>
+      <td><b>Фрезерный станок ЧПУ FR-2707</b><br><span style="color:#64748b">EQ-0009-FR · qty 1</span></td>
+      <td>2</td>
+      <td>1&nbsp;800 кг</td>
+      <td>2.702 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(10, this.checked)">
+      </td>
+      <td><b>ORD-2025-010</b><br><span style="color:#64748b">id: 10</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_E</td>
+      <td><b>УФ-принтер рулонный UV-195</b><br><span style="color:#64748b">EQ-0010-UV · qty 1</span></td>
+      <td>1</td>
+      <td>2&nbsp;610 кг</td>
+      <td>4.080 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(11, this.checked)">
+      </td>
+      <td><b>ORD-2025-011</b><br><span style="color:#64748b">id: 11</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-06</td>
+      <td>Supplier_A</td>
+      <td><b>Сольвентный принтер SC-260</b><br><span style="color:#64748b">EQ-0011-SL · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;200 кг</td>
+      <td>6.864 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(12, this.checked)">
+      </td>
+      <td><b>ORD-2025-012</b><br><span style="color:#64748b">id: 12</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-04</td>
+      <td>Supplier_B</td>
+      <td><b>Сольвентный принтер SC-275</b><br><span style="color:#64748b">EQ-0012-SL · qty 1</span></td>
+      <td>1</td>
+      <td>2&nbsp;900 кг</td>
+      <td>6.394 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(13, this.checked)">
+      </td>
+      <td><b>ORD-2025-013</b><br><span style="color:#64748b">id: 13</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_C</td>
+      <td><b>УФ-принтер гибридный HB-210</b><br><span style="color:#64748b">EQ-0013-UV · qty 1</span></td>
+      <td>2</td>
+      <td>3&nbsp;000 кг</td>
+      <td>7.854 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(14, this.checked)">
+      </td>
+      <td><b>ORD-2025-014</b><br><span style="color:#64748b">id: 14</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_D</td>
+      <td><b>Фрезерный станок ЧПУ FR-2707L</b><br><span style="color:#64748b">EQ-0014-FR · qty 1</span></td>
+      <td>2</td>
+      <td>1&nbsp;554 кг</td>
+      <td>2.702 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(15, this.checked)">
+      </td>
+      <td><b>ORD-2025-015</b><br><span style="color:#64748b">id: 15</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-05</td>
+      <td>Supplier_E</td>
+      <td><b>УФ-принтер планшетный UV-180</b><br><span style="color:#64748b">EQ-0015-UV · qty 1</span></td>
+      <td>2</td>
+      <td>4&nbsp;000 кг</td>
+      <td>6.912 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(16, this.checked)">
+      </td>
+      <td><b>ORD-2025-016</b><br><span style="color:#64748b">id: 16</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-09</td>
+      <td>Supplier_A</td>
+      <td><b>Сольвентный принтер SC-320</b><br><span style="color:#64748b">EQ-0016-SL · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;900 кг</td>
+      <td>7.812 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(17, this.checked)">
+      </td>
+      <td><b>ORD-2025-017</b><br><span style="color:#64748b">id: 17</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-06</td>
+      <td>Supplier_B</td>
+      <td><b>Сольвентный принтер SC-230M</b><br><span style="color:#64748b">EQ-0017-SL · qty 1</span></td>
+      <td>1</td>
+      <td>2&nbsp;800 кг</td>
+      <td>5.313 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(18, this.checked)">
+      </td>
+      <td><b>ORD-2025-018</b><br><span style="color:#64748b">id: 18</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-06</td>
+      <td>Supplier_C</td>
+      <td><b>Фрезерный станок ЧПУ FR-3207</b><br><span style="color:#64748b">EQ-0018-FR · qty 1</span></td>
+      <td>1</td>
+      <td>3&nbsp;600 кг</td>
+      <td>2.688 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(19, this.checked)">
+      </td>
+      <td><b>ORD-2025-019</b><br><span style="color:#64748b">id: 19</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-10</td>
+      <td>Supplier_D</td>
+      <td><b>ДТФ-принтер DTF-60X</b><br><span style="color:#64748b">EQ-0019-DT · qty 1</span></td>
+      <td>2</td>
+      <td>1&nbsp;804 кг</td>
+      <td>5.798 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(20, this.checked)">
+      </td>
+      <td><b>ORD-2025-020</b><br><span style="color:#64748b">id: 20</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-11-07</td>
+      <td>Supplier_E</td>
+      <td><b>УФ-принтер планшетный UV-180S</b><br><span style="color:#64748b">EQ-0020-UV · qty 1</span></td>
+      <td>1</td>
+      <td>1&nbsp;800 кг</td>
+      <td>2.268 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(21, this.checked)">
+      </td>
+      <td><b>ORD-2025-021</b><br><span style="color:#64748b">id: 21</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-16</td>
+      <td>Supplier_D</td>
+      <td><b>Лазерный гравер диодный LD-80</b><br><span style="color:#64748b">EQ-0028-LZ · qty 1</span></td>
+      <td>1</td>
+      <td>420 кг</td>
+      <td>0.580 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(22, this.checked)">
+      </td>
+      <td><b>ORD-2025-022</b><br><span style="color:#64748b">id: 22</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-20</td>
+      <td>Supplier_I</td>
+      <td><b>ДТФ-принтер DTF-30</b><br><span style="color:#64748b">EQ-0021-DT · qty 1</span></td>
+      <td>1</td>
+      <td>650 кг</td>
+      <td>0.833 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(23, this.checked)">
+      </td>
+      <td><b>ORD-2025-023</b><br><span style="color:#64748b">id: 23</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-17</td>
+      <td>Supplier_B</td>
+      <td><b>Лазерный гравер CO2 LZ-160</b><br><span style="color:#64748b">EQ-0023-LZ · qty 2</span></td>
+      <td>4</td>
+      <td>4&nbsp;400 кг</td>
+      <td>8.664 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(24, this.checked)">
+      </td>
+      <td><b>ORD-2025-024</b><br><span style="color:#64748b">id: 24</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-21</td>
+      <td>Supplier_I</td>
+      <td><b>Лазерный гравер диодный LD-80</b><br><span style="color:#64748b">EQ-0028-LZ · qty 1</span></td>
+      <td>1</td>
+      <td>420 кг</td>
+      <td>0.580 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(25, this.checked)">
+      </td>
+      <td><b>ORD-2025-025</b><br><span style="color:#64748b">id: 25</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-18</td>
+      <td>Supplier_A</td>
+      <td><b>УФ-принтер рулонный UV-160R</b><br><span style="color:#64748b">EQ-0027-UV · qty 2</span></td>
+      <td>4</td>
+      <td>6&nbsp;600 кг</td>
+      <td>13.860 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(28, this.checked)">
+      </td>
+      <td><b>ORD-2025-028</b><br><span style="color:#64748b">id: 28</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-29</td>
+      <td>Supplier_G</td>
+      <td><b>Сольвентный принтер SC-160</b><br><span style="color:#64748b">EQ-0025-SL · qty 2</span></td>
+      <td>2</td>
+      <td>3&nbsp;600 кг</td>
+      <td>6.720 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(29, this.checked)">
+      </td>
+      <td><b>ORD-2025-029</b><br><span style="color:#64748b">id: 29</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-01-29</td>
+      <td>Supplier_B</td>
+      <td><b>Лазерный гравер CO2 LZ-160</b><br><span style="color:#64748b">EQ-0023-LZ · qty 2</span></td>
+      <td>4</td>
+      <td>4&nbsp;400 кг</td>
+      <td>8.664 м³</td>
+    </tr><tr class="">
+      <td>
+        <input class="check" type="checkbox" onchange="toggleOrder(30, this.checked)">
+      </td>
+      <td><b>ORD-2025-030</b><br><span style="color:#64748b">id: 30</span></td>
+      <td><span class="pill ready">Груз готов</span></td>
+      <td>CNSHA</td>
+      <td>2025-02-05</td>
+      <td>Supplier_G</td>
+      <td><b>УФ-принтер рулонный UV-160R</b><br><span style="color:#64748b">EQ-0027-UV · qty 2</span></td>
+      <td>4</td>
+      <td>6&nbsp;600 кг</td>
+      <td>13.860 м³</td>
+    </tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="card panel">
+          <h2>Контейнер и расчёт</h2>
+          <select id="container" onchange="calculate()"><option value="1">40DC · 67.7 м³ · 26&nbsp;300 кг</option><option value="2">20GP · 33.2 м³ · 21&nbsp;700 кг</option></select>
+
+          <div class="metric-grid">
+            <div class="mini"><span>Суммарный вес</span><b id="sumWeight">0 кг</b></div>
+            <div class="mini"><span>Суммарный объём</span><b id="sumVolume">0.0 м³</b></div>
+            <div class="mini"><span>Коробов</span><b id="sumBoxes">0</b></div>
+            <div class="mini"><span>Заказов</span><b id="sumOrders">0</b></div>
+          </div>
+
+          <div class="meter-label"><span>Загрузка по объёму</span><b id="pvText">0%</b></div>
+          <div class="meter"><div id="pvBar" class="bar" style="width: 0%;"></div></div>
+          <div class="meter-label"><span>Загрузка по весу</span><b id="pmText">0%</b></div>
+          <div class="meter"><div id="pmBar" class="bar" style="width: 0%;"></div></div>
+          <div class="meter-label"><span>Общий показатель F</span><b id="fText">0.00</b></div>
+          <div class="meter"><div id="fBar" class="bar" style="width: 0%;"></div></div>
+
+          <div class="container-preview" id="preview"></div>
+          <div id="recommendation" class="message">Выберите заказы со статусом «Груз готов» для расчёта.</div>
+        </div>
+
+        <div class="card panel">
+          <h2>Выбранные заказы</h2>
+          <div id="selectedList" class="selected-list"><div class="empty">Пока ничего не выбрано</div></div>
+          <div class="toolbar" style="margin-top:14px">
+            <button class="primary" onclick="formConsolidation()">Сформировать консолидацию</button>
+            <button class="ghost" onclick="resetSelection()">Сбросить выбор</button>
+            <button class="ghost" onclick="exportResult()">Выгрузить результат</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" class="toast">Демо: интеграция с 1С/API имитируется локальными данными</div>
+<div id="modal" class="modal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <h2 id="modalTitle">Результат</h2>
+    <pre id="modalPre"></pre>
+    <div class="toolbar" style="justify-content:flex-end;margin-bottom:0">
+      <button class="primary" onclick="downloadJson()">Скачать JSON</button>
+      <button class="ghost" onclick="hideModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = {"orders": [{"id": 1, "number": "ORD-2025-001", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-12", "shipDate": "2025-11-05", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 1, "boxes": 2, "weight": 5300.0, "volume": 14.0, "canTilt": false, "canStack": true}, {"id": 2, "number": "ORD-2025-002", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-29", "shipDate": "2025-11-06", "product": "УФ-принтер гибридный HB-120", "sku": "EQ-0002-UV", "quantity": 1, "boxes": 2, "weight": 2800.0, "volume": 7.68, "canTilt": false, "canStack": true}, {"id": 3, "number": "ORD-2025-003", "supplier": "Supplier_C", "supplierId": 3, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-12", "shipDate": "2025-11-06", "product": "Сольвентный принтер SC-280", "sku": "EQ-0003-SL", "quantity": 1, "boxes": 1, "weight": 3250.0, "volume": 7.812, "canTilt": false, "canStack": true}, {"id": 4, "number": "ORD-2025-004", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-24", "shipDate": "2025-11-03", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 1, "boxes": 1, "weight": 3800.0, "volume": 4.933, "canTilt": false, "canStack": false}, {"id": 5, "number": "ORD-2025-005", "supplier": "Supplier_E", "supplierId": 5, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-02", "shipDate": "2025-11-07", "product": "УФ-принтер планшетный UV-A1", "sku": "EQ-0005-UV", "quantity": 1, "boxes": 1, "weight": 1300.0, "volume": 2.899, "canTilt": false, "canStack": true}, {"id": 6, "number": "ORD-2025-006", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-24", "shipDate": "2025-11-07", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 1, "boxes": 2, "weight": 5500.0, "volume": 10.626, "canTilt": false, "canStack": true}, {"id": 7, "number": "ORD-2025-007", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-24", "shipDate": "2025-11-08", "product": "Сольвентный принтер SC-280X", "sku": "EQ-0007-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 5.544, "canTilt": false, "canStack": true}, {"id": 8, "number": "ORD-2025-008", "supplier": "Supplier_C", "supplierId": 3, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-22", "shipDate": "2025-11-05", "product": "ДТФ-принтер DTF-60", "sku": "EQ-0008-DT", "quantity": 1, "boxes": 2, "weight": 2600.0, "volume": 2.508, "canTilt": false, "canStack": true}, {"id": 9, "number": "ORD-2025-009", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-11", "shipDate": "2025-11-07", "product": "Фрезерный станок ЧПУ FR-2707", "sku": "EQ-0009-FR", "quantity": 1, "boxes": 2, "weight": 1800.0, "volume": 2.702, "canTilt": false, "canStack": false}, {"id": 10, "number": "ORD-2025-010", "supplier": "Supplier_E", "supplierId": 5, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-29", "shipDate": "2025-11-05", "product": "УФ-принтер рулонный UV-195", "sku": "EQ-0010-UV", "quantity": 1, "boxes": 1, "weight": 2610.0, "volume": 4.08, "canTilt": false, "canStack": true}, {"id": 11, "number": "ORD-2025-011", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-13", "shipDate": "2025-11-06", "product": "Сольвентный принтер SC-260", "sku": "EQ-0011-SL", "quantity": 1, "boxes": 1, "weight": 3200.0, "volume": 6.864, "canTilt": false, "canStack": true}, {"id": 12, "number": "ORD-2025-012", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-24", "shipDate": "2025-11-04", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 1, "boxes": 1, "weight": 2900.0, "volume": 6.394, "canTilt": false, "canStack": true}, {"id": 13, "number": "ORD-2025-013", "supplier": "Supplier_C", "supplierId": 3, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-11", "shipDate": "2025-11-05", "product": "УФ-принтер гибридный HB-210", "sku": "EQ-0013-UV", "quantity": 1, "boxes": 2, "weight": 3000.0, "volume": 7.854, "canTilt": false, "canStack": true}, {"id": 14, "number": "ORD-2025-014", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-04", "shipDate": "2025-11-05", "product": "Фрезерный станок ЧПУ FR-2707L", "sku": "EQ-0014-FR", "quantity": 1, "boxes": 2, "weight": 1554.0, "volume": 2.702, "canTilt": false, "canStack": false}, {"id": 15, "number": "ORD-2025-015", "supplier": "Supplier_E", "supplierId": 5, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-27", "shipDate": "2025-11-05", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 1, "boxes": 2, "weight": 4000.0, "volume": 6.912, "canTilt": false, "canStack": true}, {"id": 16, "number": "ORD-2025-016", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-23", "shipDate": "2025-11-09", "product": "Сольвентный принтер SC-320", "sku": "EQ-0016-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 7.812, "canTilt": false, "canStack": true}, {"id": 17, "number": "ORD-2025-017", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-14", "shipDate": "2025-11-06", "product": "Сольвентный принтер SC-230M", "sku": "EQ-0017-SL", "quantity": 1, "boxes": 1, "weight": 2800.0, "volume": 5.313, "canTilt": false, "canStack": true}, {"id": 18, "number": "ORD-2025-018", "supplier": "Supplier_C", "supplierId": 3, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-07-07", "shipDate": "2025-11-06", "product": "Фрезерный станок ЧПУ FR-3207", "sku": "EQ-0018-FR", "quantity": 1, "boxes": 1, "weight": 3600.0, "volume": 2.688, "canTilt": false, "canStack": false}, {"id": 19, "number": "ORD-2025-019", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-26", "shipDate": "2025-11-10", "product": "ДТФ-принтер DTF-60X", "sku": "EQ-0019-DT", "quantity": 1, "boxes": 2, "weight": 1804.0, "volume": 5.798, "canTilt": false, "canStack": true}, {"id": 20, "number": "ORD-2025-020", "supplier": "Supplier_E", "supplierId": 5, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2025-06-26", "shipDate": "2025-11-07", "product": "УФ-принтер планшетный UV-180S", "sku": "EQ-0020-UV", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 2.268, "canTilt": false, "canStack": true}, {"id": 21, "number": "ORD-2025-021", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-09-14", "shipDate": "2025-01-16", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 22, "number": "ORD-2025-022", "supplier": "Supplier_I", "supplierId": 9, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-09-03", "shipDate": "2025-01-20", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 23, "number": "ORD-2025-023", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-08-31", "shipDate": "2025-01-17", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 2, "boxes": 4, "weight": 4400.0, "volume": 8.664, "canTilt": false, "canStack": true}, {"id": 24, "number": "ORD-2025-024", "supplier": "Supplier_I", "supplierId": 9, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-09-27", "shipDate": "2025-01-21", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 25, "number": "ORD-2025-025", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-09-02", "shipDate": "2025-01-18", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 26, "number": "ORD-2025-026", "supplier": "Supplier_C", "supplierId": 3, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2024-09-20", "shipDate": "2025-01-23", "product": "УФ-принтер гибридный HB-210", "sku": "EQ-0013-UV", "quantity": 2, "boxes": 4, "weight": 6000.0, "volume": 15.708, "canTilt": false, "canStack": true}, {"id": 27, "number": "ORD-2025-027", "supplier": "Supplier_G", "supplierId": 7, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2024-09-11", "shipDate": "2025-01-24", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 28, "number": "ORD-2025-028", "supplier": "Supplier_G", "supplierId": 7, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-10-01", "shipDate": "2025-01-29", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 29, "number": "ORD-2025-029", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-10-02", "shipDate": "2025-01-29", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 2, "boxes": 4, "weight": 4400.0, "volume": 8.664, "canTilt": false, "canStack": true}, {"id": 30, "number": "ORD-2025-030", "supplier": "Supplier_G", "supplierId": 7, "status": "Груз готов", "statusId": 5, "port": "CNSHA", "orderDate": "2024-10-01", "shipDate": "2025-02-05", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 31, "number": "ORD-2025-031", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-27", "shipDate": "2025-02-03", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 32, "number": "ORD-2025-032", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-27", "shipDate": "2025-02-03", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 2, "boxes": 2, "weight": 7600.0, "volume": 9.866, "canTilt": false, "canStack": false}, {"id": 33, "number": "ORD-2025-033", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-29", "shipDate": "2025-02-06", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 2, "boxes": 4, "weight": 8000.0, "volume": 13.824, "canTilt": false, "canStack": true}, {"id": 34, "number": "ORD-2025-034", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-20", "shipDate": "2025-02-03", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 35, "number": "ORD-2025-035", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-19", "shipDate": "2025-02-05", "product": "Сольвентный принтер SC-280X", "sku": "EQ-0007-SL", "quantity": 2, "boxes": 2, "weight": 7800.0, "volume": 11.088, "canTilt": false, "canStack": true}, {"id": 36, "number": "ORD-2025-036", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-27", "shipDate": "2025-02-09", "product": "Сольвентный принтер SC-280X", "sku": "EQ-0007-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 5.544, "canTilt": false, "canStack": true}, {"id": 37, "number": "ORD-2025-037", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-08", "shipDate": "2025-02-09", "product": "Фрезерный станок ЧПУ FR-3207", "sku": "EQ-0018-FR", "quantity": 2, "boxes": 2, "weight": 7200.0, "volume": 5.376, "canTilt": false, "canStack": false}, {"id": 38, "number": "ORD-2025-038", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-10", "shipDate": "2025-02-10", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 1, "boxes": 2, "weight": 4000.0, "volume": 6.912, "canTilt": false, "canStack": true}, {"id": 39, "number": "ORD-2025-039", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-09-25", "shipDate": "2025-02-12", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 40, "number": "ORD-2025-040", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-11", "shipDate": "2025-02-14", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 41, "number": "ORD-2025-041", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-22", "shipDate": "2025-02-14", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 42, "number": "ORD-2025-042", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-24", "shipDate": "2025-02-19", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 43, "number": "ORD-2025-043", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-13", "shipDate": "2025-02-19", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 44, "number": "ORD-2025-044", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-08", "shipDate": "2025-02-19", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 45, "number": "ORD-2025-045", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-23", "shipDate": "2025-02-18", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 1, "boxes": 1, "weight": 2900.0, "volume": 6.394, "canTilt": false, "canStack": true}, {"id": 46, "number": "ORD-2025-046", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-08", "shipDate": "2025-02-21", "product": "УФ-принтер гибридный HB-120", "sku": "EQ-0002-UV", "quantity": 1, "boxes": 2, "weight": 2800.0, "volume": 7.68, "canTilt": false, "canStack": true}, {"id": 47, "number": "ORD-2025-047", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-05", "shipDate": "2025-02-21", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 48, "number": "ORD-2025-048", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-26", "shipDate": "2025-02-22", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 49, "number": "ORD-2025-049", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-15", "shipDate": "2025-02-25", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 50, "number": "ORD-2025-050", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-17", "shipDate": "2025-02-24", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 51, "number": "ORD-2025-051", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-15", "shipDate": "2025-02-27", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 2, "boxes": 2, "weight": 1300.0, "volume": 1.666, "canTilt": false, "canStack": true}, {"id": 52, "number": "ORD-2025-052", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-30", "shipDate": "2025-02-24", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 2, "boxes": 4, "weight": 10600.0, "volume": 28.0, "canTilt": false, "canStack": true}, {"id": 53, "number": "ORD-2025-053", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-19", "shipDate": "2025-03-02", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 54, "number": "ORD-2025-054", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-16", "shipDate": "2025-03-03", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 1, "boxes": 1, "weight": 980.0, "volume": 1.584, "canTilt": false, "canStack": true}, {"id": 55, "number": "ORD-2025-055", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-25", "shipDate": "2025-02-27", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 56, "number": "ORD-2025-056", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-22", "shipDate": "2025-02-27", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 1, "boxes": 2, "weight": 5500.0, "volume": 10.626, "canTilt": false, "canStack": true}, {"id": 57, "number": "ORD-2025-057", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-03", "shipDate": "2025-03-11", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 1, "boxes": 1, "weight": 980.0, "volume": 1.584, "canTilt": false, "canStack": true}, {"id": 58, "number": "ORD-2025-058", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-29", "shipDate": "2025-03-11", "product": "УФ-принтер рулонный UV-195", "sku": "EQ-0010-UV", "quantity": 1, "boxes": 1, "weight": 2610.0, "volume": 4.08, "canTilt": false, "canStack": true}, {"id": 59, "number": "ORD-2025-059", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-10-27", "shipDate": "2025-03-15", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 60, "number": "ORD-2025-060", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-03", "shipDate": "2025-03-19", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 2, "boxes": 4, "weight": 3800.0, "volume": 8.064, "canTilt": false, "canStack": false}, {"id": 61, "number": "ORD-2025-061", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-17", "shipDate": "2025-03-16", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 1, "boxes": 1, "weight": 980.0, "volume": 1.584, "canTilt": false, "canStack": true}, {"id": 62, "number": "ORD-2025-062", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-10", "shipDate": "2025-03-18", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 63, "number": "ORD-2025-063", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-21", "shipDate": "2025-03-20", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 2, "boxes": 2, "weight": 1300.0, "volume": 1.666, "canTilt": false, "canStack": true}, {"id": 64, "number": "ORD-2025-064", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-09", "shipDate": "2025-03-23", "product": "УФ-принтер гибридный HB-120", "sku": "EQ-0002-UV", "quantity": 1, "boxes": 2, "weight": 2800.0, "volume": 7.68, "canTilt": false, "canStack": true}, {"id": 65, "number": "ORD-2025-065", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-16", "shipDate": "2025-03-20", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 66, "number": "ORD-2025-066", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-28", "shipDate": "2025-03-24", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 67, "number": "ORD-2025-067", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-28", "shipDate": "2025-03-23", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 1, "boxes": 2, "weight": 5300.0, "volume": 14.0, "canTilt": false, "canStack": true}, {"id": 68, "number": "ORD-2025-068", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-15", "shipDate": "2025-03-27", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 69, "number": "ORD-2025-069", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-24", "shipDate": "2025-03-29", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 70, "number": "ORD-2025-070", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-24", "shipDate": "2025-03-29", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 1, "boxes": 1, "weight": 3800.0, "volume": 4.933, "canTilt": false, "canStack": false}, {"id": 71, "number": "ORD-2025-071", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-22", "shipDate": "2025-03-30", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 72, "number": "ORD-2025-072", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-03", "shipDate": "2025-03-30", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 2, "boxes": 4, "weight": 3800.0, "volume": 8.064, "canTilt": false, "canStack": false}, {"id": 73, "number": "ORD-2025-073", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-06", "shipDate": "2025-04-03", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 1, "boxes": 1, "weight": 2900.0, "volume": 6.394, "canTilt": false, "canStack": true}, {"id": 74, "number": "ORD-2025-074", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-27", "shipDate": "2025-04-05", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 1, "boxes": 2, "weight": 5500.0, "volume": 10.626, "canTilt": false, "canStack": true}, {"id": 75, "number": "ORD-2025-075", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-06", "shipDate": "2025-04-04", "product": "Фрезерный станок ЧПУ FR-2707", "sku": "EQ-0009-FR", "quantity": 2, "boxes": 4, "weight": 3600.0, "volume": 5.404, "canTilt": false, "canStack": false}, {"id": 76, "number": "ORD-2025-076", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-24", "shipDate": "2025-04-04", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 77, "number": "ORD-2025-077", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-26", "shipDate": "2025-04-09", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 78, "number": "ORD-2025-078", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-11-28", "shipDate": "2025-04-11", "product": "УФ-принтер гибридный HB-120", "sku": "EQ-0002-UV", "quantity": 1, "boxes": 2, "weight": 2800.0, "volume": 7.68, "canTilt": false, "canStack": true}, {"id": 79, "number": "ORD-2025-079", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-04", "shipDate": "2025-04-18", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 80, "number": "ORD-2025-080", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-11", "shipDate": "2025-04-16", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 2, "boxes": 4, "weight": 10600.0, "volume": 28.0, "canTilt": false, "canStack": true}, {"id": 81, "number": "ORD-2025-081", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-14", "shipDate": "2025-04-18", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 82, "number": "ORD-2025-082", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-07", "shipDate": "2025-04-22", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 1, "boxes": 1, "weight": 980.0, "volume": 1.584, "canTilt": false, "canStack": true}, {"id": 83, "number": "ORD-2025-083", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-09", "shipDate": "2025-04-20", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 84, "number": "ORD-2025-084", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-20", "shipDate": "2025-04-25", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 85, "number": "ORD-2025-085", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-24", "shipDate": "2025-04-22", "product": "Сольвентный принтер SC-280", "sku": "EQ-0003-SL", "quantity": 1, "boxes": 1, "weight": 3250.0, "volume": 7.812, "canTilt": false, "canStack": true}, {"id": 86, "number": "ORD-2025-086", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-27", "shipDate": "2025-04-25", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 87, "number": "ORD-2025-087", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-14", "shipDate": "2025-04-21", "product": "УФ-принтер планшетный UV-180S", "sku": "EQ-0020-UV", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 2.268, "canTilt": false, "canStack": true}, {"id": 88, "number": "ORD-2025-088", "supplier": "Supplier_A", "supplierId": 1, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2024-12-08", "shipDate": "2025-04-27", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 89, "number": "ORD-2025-089", "supplier": "Supplier_B", "supplierId": 2, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2024-12-19", "shipDate": "2025-04-29", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 1, "boxes": 1, "weight": 2900.0, "volume": 6.394, "canTilt": false, "canStack": true}, {"id": 90, "number": "ORD-2025-090", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2024-12-16", "shipDate": "2025-04-27", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 91, "number": "ORD-2025-091", "supplier": "Supplier_F", "supplierId": 6, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2025-01-01", "shipDate": "2025-04-28", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 92, "number": "ORD-2025-092", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-25", "shipDate": "2025-05-01", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 93, "number": "ORD-2025-093", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-05", "shipDate": "2025-05-01", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 1, "boxes": 2, "weight": 5300.0, "volume": 14.0, "canTilt": false, "canStack": true}, {"id": 94, "number": "ORD-2025-094", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-05", "shipDate": "2025-04-30", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 2, "boxes": 4, "weight": 3800.0, "volume": 8.064, "canTilt": false, "canStack": false}, {"id": 95, "number": "ORD-2025-095", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-13", "shipDate": "2025-05-15", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 96, "number": "ORD-2025-096", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-02", "shipDate": "2025-05-16", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 97, "number": "ORD-2025-097", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-05", "shipDate": "2025-05-18", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 98, "number": "ORD-2025-098", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-10", "shipDate": "2025-05-20", "product": "УФ-принтер планшетный UV-A1", "sku": "EQ-0005-UV", "quantity": 1, "boxes": 1, "weight": 1300.0, "volume": 2.899, "canTilt": false, "canStack": true}, {"id": 99, "number": "ORD-2025-099", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2024-12-31", "shipDate": "2025-05-18", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 100, "number": "ORD-2025-100", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-16", "shipDate": "2025-05-21", "product": "Сольвентный принтер SC-260", "sku": "EQ-0011-SL", "quantity": 2, "boxes": 2, "weight": 6400.0, "volume": 13.728, "canTilt": false, "canStack": true}, {"id": 101, "number": "ORD-2025-101", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-17", "shipDate": "2025-05-21", "product": "УФ-принтер планшетный UV-A1", "sku": "EQ-0005-UV", "quantity": 2, "boxes": 2, "weight": 2600.0, "volume": 5.798, "canTilt": false, "canStack": true}, {"id": 102, "number": "ORD-2025-102", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-27", "shipDate": "2025-05-23", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 103, "number": "ORD-2025-103", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-01", "shipDate": "2025-05-21", "product": "Сольвентный принтер SC-280", "sku": "EQ-0003-SL", "quantity": 2, "boxes": 2, "weight": 6500.0, "volume": 15.624, "canTilt": false, "canStack": true}, {"id": 104, "number": "ORD-2025-104", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-18", "shipDate": "2025-05-24", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 2, "boxes": 4, "weight": 11000.0, "volume": 21.252, "canTilt": false, "canStack": true}, {"id": 105, "number": "ORD-2025-105", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-27", "shipDate": "2025-05-31", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 106, "number": "ORD-2025-106", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-11", "shipDate": "2025-05-28", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 3.36, "canTilt": false, "canStack": true}, {"id": 107, "number": "ORD-2025-107", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-30", "shipDate": "2025-05-27", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 108, "number": "ORD-2025-108", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-28", "shipDate": "2025-05-27", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 109, "number": "ORD-2025-109", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-26", "shipDate": "2025-06-01", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 2, "boxes": 2, "weight": 7600.0, "volume": 9.866, "canTilt": false, "canStack": false}, {"id": 110, "number": "ORD-2025-110", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-29", "shipDate": "2025-05-31", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 111, "number": "ORD-2025-111", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-14", "shipDate": "2025-05-31", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 112, "number": "ORD-2025-112", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-24", "shipDate": "2025-06-02", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 113, "number": "ORD-2025-113", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-01-25", "shipDate": "2025-06-06", "product": "Сольвентный принтер SC-320", "sku": "EQ-0016-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 7.812, "canTilt": false, "canStack": true}, {"id": 114, "number": "ORD-2025-114", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-10", "shipDate": "2025-06-11", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 2, "boxes": 2, "weight": 1960.0, "volume": 3.168, "canTilt": false, "canStack": true}, {"id": 115, "number": "ORD-2025-115", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-16", "shipDate": "2025-06-15", "product": "Фрезерный станок ЧПУ FR-2707L", "sku": "EQ-0014-FR", "quantity": 2, "boxes": 4, "weight": 3108.0, "volume": 5.404, "canTilt": false, "canStack": false}, {"id": 116, "number": "ORD-2025-116", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-21", "shipDate": "2025-06-18", "product": "Фрезерный станок ЧПУ FR-2707L", "sku": "EQ-0014-FR", "quantity": 2, "boxes": 4, "weight": 3108.0, "volume": 5.404, "canTilt": false, "canStack": false}, {"id": 117, "number": "ORD-2025-117", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-07", "shipDate": "2025-06-15", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 2, "boxes": 4, "weight": 4400.0, "volume": 8.664, "canTilt": false, "canStack": true}, {"id": 118, "number": "ORD-2025-118", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-14", "shipDate": "2025-06-20", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 1, "boxes": 2, "weight": 1900.0, "volume": 4.032, "canTilt": false, "canStack": false}, {"id": 119, "number": "ORD-2025-119", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-11", "shipDate": "2025-06-23", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 120, "number": "ORD-2025-120", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-27", "shipDate": "2025-06-23", "product": "Широкоформатный УФ-принтер WF-160", "sku": "EQ-0001-UV", "quantity": 1, "boxes": 2, "weight": 5300.0, "volume": 14.0, "canTilt": false, "canStack": true}, {"id": 121, "number": "ORD-2025-121", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-15", "shipDate": "2025-06-23", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 122, "number": "ORD-2025-122", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-24", "shipDate": "2025-06-26", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 123, "number": "ORD-2025-123", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-17", "shipDate": "2025-06-26", "product": "УФ-принтер гибридный HB-120", "sku": "EQ-0002-UV", "quantity": 2, "boxes": 4, "weight": 5600.0, "volume": 15.36, "canTilt": false, "canStack": true}, {"id": 124, "number": "ORD-2025-124", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-14", "shipDate": "2025-06-25", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 1, "boxes": 1, "weight": 3800.0, "volume": 4.933, "canTilt": false, "canStack": false}, {"id": 125, "number": "ORD-2025-125", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-26", "shipDate": "2025-06-24", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 2, "boxes": 4, "weight": 8000.0, "volume": 13.824, "canTilt": false, "canStack": true}, {"id": 126, "number": "ORD-2025-126", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-10", "shipDate": "2025-06-29", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 2, "boxes": 2, "weight": 5800.0, "volume": 12.788, "canTilt": false, "canStack": true}, {"id": 127, "number": "ORD-2025-127", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-20", "shipDate": "2025-07-01", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 2, "boxes": 4, "weight": 8000.0, "volume": 13.824, "canTilt": false, "canStack": true}, {"id": 128, "number": "ORD-2025-128", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-17", "shipDate": "2025-07-02", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 129, "number": "ORD-2025-129", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-14", "shipDate": "2025-07-03", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 130, "number": "ORD-2025-130", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-03", "shipDate": "2025-07-05", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 131, "number": "ORD-2025-131", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-06", "shipDate": "2025-07-02", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 2, "boxes": 4, "weight": 8000.0, "volume": 13.824, "canTilt": false, "canStack": true}, {"id": 132, "number": "ORD-2025-132", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-11", "shipDate": "2025-07-05", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 133, "number": "ORD-2025-133", "supplier": "Supplier_H", "supplierId": 8, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-05", "shipDate": "2025-07-14", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 134, "number": "ORD-2025-134", "supplier": "Supplier_I", "supplierId": 9, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-05", "shipDate": "2025-07-14", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 135, "number": "ORD-2025-135", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-02", "shipDate": "2025-07-13", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 136, "number": "ORD-2025-136", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-03", "shipDate": "2025-07-14", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 137, "number": "ORD-2025-137", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-22", "shipDate": "2025-07-15", "product": "Сольвентный принтер SC-280X", "sku": "EQ-0007-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 5.544, "canTilt": false, "canStack": true}, {"id": 138, "number": "ORD-2025-138", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-02-27", "shipDate": "2025-07-14", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 139, "number": "ORD-2025-139", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-08", "shipDate": "2025-07-15", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 140, "number": "ORD-2025-140", "supplier": "Supplier_G", "supplierId": 7, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-16", "shipDate": "2025-07-17", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 141, "number": "ORD-2025-141", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-10", "shipDate": "2025-07-18", "product": "ДТФ-принтер DTF-60X", "sku": "EQ-0019-DT", "quantity": 2, "boxes": 4, "weight": 3608.0, "volume": 11.596, "canTilt": false, "canStack": true}, {"id": 142, "number": "ORD-2025-142", "supplier": "Supplier_F", "supplierId": 6, "status": "Груз готов", "statusId": 5, "port": "CNTXG", "orderDate": "2025-03-15", "shipDate": "2025-07-19", "product": "Лазерный гравер CO2 LZ-130", "sku": "EQ-0022-LZ", "quantity": 1, "boxes": 1, "weight": 980.0, "volume": 1.584, "canTilt": false, "canStack": true}, {"id": 143, "number": "ORD-2025-143", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-24", "shipDate": "2025-07-23", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 144, "number": "ORD-2025-144", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-27", "shipDate": "2025-07-21", "product": "Сольвентный принтер SC-280", "sku": "EQ-0003-SL", "quantity": 1, "boxes": 1, "weight": 3250.0, "volume": 7.812, "canTilt": false, "canStack": true}, {"id": 145, "number": "ORD-2025-145", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-27", "shipDate": "2025-07-23", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 2, "boxes": 4, "weight": 4400.0, "volume": 8.664, "canTilt": false, "canStack": true}, {"id": 146, "number": "ORD-2025-146", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-16", "shipDate": "2025-07-29", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 147, "number": "ORD-2025-147", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-14", "shipDate": "2025-07-30", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 148, "number": "ORD-2025-148", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-11", "shipDate": "2025-07-27", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 149, "number": "ORD-2025-149", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-16", "shipDate": "2025-07-29", "product": "ДТФ-принтер DTF-60X", "sku": "EQ-0019-DT", "quantity": 2, "boxes": 4, "weight": 3608.0, "volume": 11.596, "canTilt": false, "canStack": true}, {"id": 150, "number": "ORD-2025-150", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-27", "shipDate": "2025-07-30", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 2, "boxes": 2, "weight": 7600.0, "volume": 9.866, "canTilt": false, "canStack": false}, {"id": 151, "number": "ORD-2025-151", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-21", "shipDate": "2025-08-01", "product": "УФ-принтер рулонный UV-195", "sku": "EQ-0010-UV", "quantity": 2, "boxes": 2, "weight": 5220.0, "volume": 8.16, "canTilt": false, "canStack": true}, {"id": 152, "number": "ORD-2025-152", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-03-25", "shipDate": "2025-07-30", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 2, "boxes": 4, "weight": 3800.0, "volume": 8.064, "canTilt": false, "canStack": false}, {"id": 153, "number": "ORD-2025-153", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-15", "shipDate": "2025-08-15", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 154, "number": "ORD-2025-154", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-19", "shipDate": "2025-08-13", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 155, "number": "ORD-2025-155", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-04", "shipDate": "2025-08-17", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 156, "number": "ORD-2025-156", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-05", "shipDate": "2025-08-20", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 1, "boxes": 2, "weight": 3300.0, "volume": 6.93, "canTilt": false, "canStack": true}, {"id": 157, "number": "ORD-2025-157", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-06", "shipDate": "2025-08-21", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 158, "number": "ORD-2025-158", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-15", "shipDate": "2025-08-18", "product": "Сольвентный принтер SC-230M", "sku": "EQ-0017-SL", "quantity": 1, "boxes": 1, "weight": 2800.0, "volume": 5.313, "canTilt": false, "canStack": true}, {"id": 159, "number": "ORD-2025-159", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-14", "shipDate": "2025-08-21", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 160, "number": "ORD-2025-160", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-16", "shipDate": "2025-08-21", "product": "ДТФ-принтер DTF-60X", "sku": "EQ-0019-DT", "quantity": 2, "boxes": 4, "weight": 3608.0, "volume": 11.596, "canTilt": false, "canStack": true}, {"id": 161, "number": "ORD-2025-161", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-01", "shipDate": "2025-08-25", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 2, "boxes": 2, "weight": 1300.0, "volume": 1.666, "canTilt": false, "canStack": true}, {"id": 162, "number": "ORD-2025-162", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-23", "shipDate": "2025-08-28", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 3.36, "canTilt": false, "canStack": true}, {"id": 163, "number": "ORD-2025-163", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-28", "shipDate": "2025-08-26", "product": "Фрезерный станок ЧПУ FR-3207", "sku": "EQ-0018-FR", "quantity": 1, "boxes": 1, "weight": 3600.0, "volume": 2.688, "canTilt": false, "canStack": false}, {"id": 164, "number": "ORD-2025-164", "supplier": "Supplier_C", "supplierId": 3, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-26", "shipDate": "2025-09-01", "product": "Фрезерный станок ЧПУ FR-3207", "sku": "EQ-0018-FR", "quantity": 2, "boxes": 2, "weight": 7200.0, "volume": 5.376, "canTilt": false, "canStack": false}, {"id": 165, "number": "ORD-2025-165", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-04", "shipDate": "2025-08-28", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 2, "boxes": 4, "weight": 11000.0, "volume": 21.252, "canTilt": false, "canStack": true}, {"id": 166, "number": "ORD-2025-166", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-19", "shipDate": "2025-08-31", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 2, "boxes": 4, "weight": 3800.0, "volume": 8.064, "canTilt": false, "canStack": false}, {"id": 167, "number": "ORD-2025-167", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-08", "shipDate": "2025-09-06", "product": "УФ-принтер планшетный UV-A1", "sku": "EQ-0005-UV", "quantity": 1, "boxes": 1, "weight": 1300.0, "volume": 2.899, "canTilt": false, "canStack": true}, {"id": 168, "number": "ORD-2025-168", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-02", "shipDate": "2025-09-03", "product": "Сольвентный принтер SC-275", "sku": "EQ-0012-SL", "quantity": 1, "boxes": 1, "weight": 2900.0, "volume": 6.394, "canTilt": false, "canStack": true}, {"id": 169, "number": "ORD-2025-169", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-26", "shipDate": "2025-09-05", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 170, "number": "ORD-2025-170", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-16", "shipDate": "2025-09-12", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 1, "boxes": 2, "weight": 1900.0, "volume": 4.032, "canTilt": false, "canStack": false}, {"id": 171, "number": "ORD-2025-171", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-04-23", "shipDate": "2025-09-10", "product": "Сольвентный принтер SC-230", "sku": "EQ-0006-SL", "quantity": 1, "boxes": 2, "weight": 5500.0, "volume": 10.626, "canTilt": false, "canStack": true}, {"id": 172, "number": "ORD-2025-172", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-19", "shipDate": "2025-09-17", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 173, "number": "ORD-2025-173", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-15", "shipDate": "2025-09-15", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 174, "number": "ORD-2025-174", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-23", "shipDate": "2025-09-21", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 2, "boxes": 2, "weight": 3600.0, "volume": 6.72, "canTilt": false, "canStack": true}, {"id": 175, "number": "ORD-2025-175", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-05", "shipDate": "2025-09-19", "product": "УФ-принтер планшетный UV-180S", "sku": "EQ-0020-UV", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 2.268, "canTilt": false, "canStack": true}, {"id": 176, "number": "ORD-2025-176", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-18", "shipDate": "2025-09-24", "product": "УФ-принтер планшетный UV-A1", "sku": "EQ-0005-UV", "quantity": 2, "boxes": 2, "weight": 2600.0, "volume": 5.798, "canTilt": false, "canStack": true}, {"id": 177, "number": "ORD-2025-177", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-04", "shipDate": "2025-09-21", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 2, "boxes": 4, "weight": 4400.0, "volume": 8.664, "canTilt": false, "canStack": true}, {"id": 178, "number": "ORD-2025-178", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-30", "shipDate": "2025-09-22", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 179, "number": "ORD-2025-179", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-26", "shipDate": "2025-09-25", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 180, "number": "ORD-2025-180", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-01", "shipDate": "2025-09-29", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 181, "number": "ORD-2025-181", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-06", "shipDate": "2025-09-30", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 182, "number": "ORD-2025-182", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-17", "shipDate": "2025-10-01", "product": "УФ-принтер рулонный UV-160R", "sku": "EQ-0027-UV", "quantity": 2, "boxes": 4, "weight": 6600.0, "volume": 13.86, "canTilt": false, "canStack": true}, {"id": 183, "number": "ORD-2025-183", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-11", "shipDate": "2025-10-04", "product": "Лазерный гравер CO2 LZ-160", "sku": "EQ-0023-LZ", "quantity": 1, "boxes": 2, "weight": 2200.0, "volume": 4.332, "canTilt": false, "canStack": true}, {"id": 184, "number": "ORD-2025-184", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-23", "shipDate": "2025-10-01", "product": "Фрезерный станок ЧПУ FR-2616", "sku": "EQ-0004-FR", "quantity": 2, "boxes": 2, "weight": 7600.0, "volume": 9.866, "canTilt": false, "canStack": false}, {"id": 185, "number": "ORD-2025-185", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-10", "shipDate": "2025-10-09", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 3.36, "canTilt": false, "canStack": true}, {"id": 186, "number": "ORD-2025-186", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-31", "shipDate": "2025-10-11", "product": "Сольвентный принтер SC-160", "sku": "EQ-0025-SL", "quantity": 1, "boxes": 1, "weight": 1800.0, "volume": 3.36, "canTilt": false, "canStack": true}, {"id": 187, "number": "ORD-2025-187", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-03", "shipDate": "2025-10-08", "product": "Сольвентный принтер SC-260", "sku": "EQ-0011-SL", "quantity": 2, "boxes": 2, "weight": 6400.0, "volume": 13.728, "canTilt": false, "canStack": true}, {"id": 188, "number": "ORD-2025-188", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-05-29", "shipDate": "2025-10-11", "product": "Фрезерный станок ЧПУ FR-2707L", "sku": "EQ-0014-FR", "quantity": 2, "boxes": 4, "weight": 3108.0, "volume": 5.404, "canTilt": false, "canStack": false}, {"id": 189, "number": "ORD-2025-189", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-21", "shipDate": "2025-10-15", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}, {"id": 190, "number": "ORD-2025-190", "supplier": "Supplier_D", "supplierId": 4, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-03", "shipDate": "2025-10-14", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 2, "boxes": 2, "weight": 840.0, "volume": 1.16, "canTilt": false, "canStack": true}, {"id": 191, "number": "ORD-2025-191", "supplier": "Supplier_H", "supplierId": 8, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-18", "shipDate": "2025-10-21", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 1, "boxes": 1, "weight": 650.0, "volume": 0.833, "canTilt": false, "canStack": true}, {"id": 192, "number": "ORD-2025-192", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-21", "shipDate": "2025-10-17", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 1, "boxes": 2, "weight": 1900.0, "volume": 4.032, "canTilt": false, "canStack": false}, {"id": 193, "number": "ORD-2025-193", "supplier": "Supplier_G", "supplierId": 7, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-04", "shipDate": "2025-10-17", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 1, "boxes": 2, "weight": 1900.0, "volume": 4.032, "canTilt": false, "canStack": false}, {"id": 194, "number": "ORD-2025-194", "supplier": "Supplier_I", "supplierId": 9, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2025-06-10", "shipDate": "2025-10-24", "product": "ДТФ-принтер DTF-30", "sku": "EQ-0021-DT", "quantity": 2, "boxes": 2, "weight": 1300.0, "volume": 1.666, "canTilt": false, "canStack": true}, {"id": 195, "number": "ORD-2025-195", "supplier": "Supplier_F", "supplierId": 6, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2025-06-08", "shipDate": "2025-10-23", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 2, "boxes": 2, "weight": 1500.0, "volume": 2.16, "canTilt": false, "canStack": true}, {"id": 196, "number": "ORD-2025-196", "supplier": "Supplier_D", "supplierId": 4, "status": "Груз готов", "statusId": 5, "port": "CNTAO", "orderDate": "2025-06-19", "shipDate": "2025-10-23", "product": "Фрезерный станок ЧПУ FR-2707L", "sku": "EQ-0014-FR", "quantity": 2, "boxes": 4, "weight": 3108.0, "volume": 5.404, "canTilt": false, "canStack": false}, {"id": 197, "number": "ORD-2025-197", "supplier": "Supplier_F", "supplierId": 6, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-07-02", "shipDate": "2025-10-25", "product": "Лазерный гравер диодный LD-80", "sku": "EQ-0028-LZ", "quantity": 1, "boxes": 1, "weight": 420.0, "volume": 0.58, "canTilt": false, "canStack": true}, {"id": 198, "number": "ORD-2025-198", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-23", "shipDate": "2025-10-28", "product": "Сольвентный принтер SC-280X", "sku": "EQ-0007-SL", "quantity": 1, "boxes": 1, "weight": 3900.0, "volume": 5.544, "canTilt": false, "canStack": true}, {"id": 199, "number": "ORD-2025-199", "supplier": "Supplier_I", "supplierId": 9, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-29", "shipDate": "2025-10-30", "product": "Фрезерный станок ЧПУ FR-1309", "sku": "EQ-0026-FR", "quantity": 1, "boxes": 2, "weight": 1900.0, "volume": 4.032, "canTilt": false, "canStack": false}, {"id": 200, "number": "ORD-2025-200", "supplier": "Supplier_E", "supplierId": 5, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-23", "shipDate": "2025-10-31", "product": "УФ-принтер планшетный UV-180", "sku": "EQ-0015-UV", "quantity": 1, "boxes": 2, "weight": 4000.0, "volume": 6.912, "canTilt": false, "canStack": true}, {"id": 201, "number": "ORD-2025-201", "supplier": "Supplier_A", "supplierId": 1, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-07-06", "shipDate": "2025-11-01", "product": "Сольвентный принтер SC-260", "sku": "EQ-0011-SL", "quantity": 1, "boxes": 1, "weight": 3200.0, "volume": 6.864, "canTilt": false, "canStack": true}, {"id": 202, "number": "ORD-2025-202", "supplier": "Supplier_B", "supplierId": 2, "status": "На складе", "statusId": 10, "port": "CNSHA", "orderDate": "2025-06-25", "shipDate": "2025-10-31", "product": "УФ-принтер планшетный UV-60", "sku": "EQ-0024-UV", "quantity": 1, "boxes": 1, "weight": 750.0, "volume": 1.08, "canTilt": false, "canStack": true}], "containers": [{"id": 1, "code": "40DC", "length": 12.03, "width": 2.35, "height": 2.39, "payload": 26300, "volume": 67.7}, {"id": 2, "code": "20GP", "length": 5.9, "width": 2.35, "height": 2.39, "payload": 21700, "volume": 33.2}], "statuses": [[1, "Создан"], [2, "В работе"], [3, "Ожидает оплату"], [4, "Изготовление"], [5, "Груз готов"], [6, "Бронирование"], [7, "В пути"], [8, "На таможне"], [9, "Доставка"], [10, "На складе"], [11, "Завершён"], [12, "Отменён"]]};
+let selected = new Set();
+let lastExport = null;
+let loaded = false;
+
+const $ = id => document.getElementById(id);
+const fmt = new Intl.NumberFormat('ru-RU');
+const fmt1 = n => Number(n).toFixed(1);
+const fmt3 = n => Number(n).toFixed(3);
+
+function init() {
+  DATA.statuses.forEach(([id, name]) => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    $('status').appendChild(opt);
+  });
+
+  [...new Set(DATA.orders.map(o => o.supplier))].sort().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    $('supplier').appendChild(opt);
+  });
+
+  DATA.containers.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.code} · ${c.volume} м³ · ${fmt.format(c.payload)} кг`;
+    $('container').appendChild(opt);
+  });
+
+  $('status').value = 'Груз готов';
+  $('port').value = 'CNSHA';
+  renderOrders();
+  calculate();
+}
+
+function getFiltered() {
+  const q = $('search').value.trim().toLowerCase();
+  const st = $('status').value;
+  const port = $('port').value;
+  const supplier = $('supplier').value;
+  const dateFrom = $('dateFrom').value;
+
+  return DATA.orders.filter(o =>
+    (!st || o.status === st) &&
+    (!port || o.port === port) &&
+    (!supplier || o.supplier === supplier) &&
+    (!dateFrom || o.shipDate >= dateFrom) &&
+    (!q || [o.number, o.product, o.sku, o.supplier, o.port].join(' ').toLowerCase().includes(q))
+  );
+}
+
+function isReady(o) {
+  return o.status === 'Груз готов';
+}
+
+function renderOrders() {
+  const rows = getFiltered();
+  const readyCount = rows.filter(isReady).length;
+  $('kpiVisible').textContent = rows.length;
+  $('kpiReady').textContent = readyCount;
+
+  const tbody = $('tbody');
+  tbody.innerHTML = '';
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="empty">Нет заказов под выбранные фильтры</td></tr>';
+    updateSelected();
+    return;
+  }
+
+  rows.forEach(o => {
+    const disabled = !isReady(o);
+    const tr = document.createElement('tr');
+    tr.className = disabled ? 'disabled' : '';
+    tr.innerHTML = `
+      <td>
+        <input class="check" type="checkbox"
+          ${selected.has(o.id) ? 'checked' : ''}
+          ${disabled ? 'disabled' : ''}
+          onchange="toggleOrder(${o.id}, this.checked)">
+      </td>
+      <td><b>${o.number}</b><br><span style="color:#64748b">id: ${o.id}</span></td>
+      <td><span class="pill ${isReady(o) ? 'ready' : 'blocked'}">${o.status}</span></td>
+      <td>${o.port}</td>
+      <td>${o.shipDate}</td>
+      <td>${o.supplier}</td>
+      <td><b>${o.product}</b><br><span style="color:#64748b">${o.sku} · qty ${o.quantity}</span></td>
+      <td>${o.boxes}</td>
+      <td>${fmt.format(Math.round(o.weight))} кг</td>
+      <td>${fmt3(o.volume)} м³</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateSelected();
+}
+
+function toggleOrder(id, checked) {
+  const order = DATA.orders.find(o => o.id === id);
+  if (!order) return;
+
+  if (!isReady(order)) {
+    toast('Этот заказ нельзя консолидировать: статус не «Груз готов»');
+    renderOrders();
+    return;
+  }
+
+  checked ? selected.add(id) : selected.delete(id);
+  updateSelected();
+  calculate();
+}
+
+function selectedOrders() {
+  return DATA.orders.filter(o => selected.has(o.id));
+}
+
+function updateSelected() {
+  const arr = selectedOrders();
+  $('kpiSelected').textContent = arr.length;
+  $('sumOrders').textContent = arr.length;
+  $('sumBoxes').textContent = arr.reduce((s,o) => s + o.boxes, 0);
+  $('sumWeight').textContent = fmt.format(Math.round(arr.reduce((s,o) => s + o.weight, 0))) + ' кг';
+  $('sumVolume').textContent = fmt1(arr.reduce((s,o) => s + o.volume, 0)) + ' м³';
+
+  const list = $('selectedList');
+  list.innerHTML = '';
+
+  if (!arr.length) {
+    list.innerHTML = '<div class="empty">Пока ничего не выбрано</div>';
+    return;
+  }
+
+  arr.forEach(o => {
+    const item = document.createElement('div');
+    item.className = 'sel-item';
+    item.innerHTML = `
+      <div>
+        <b>${o.number}</b><br>
+        <small>${o.product} · ${fmt.format(Math.round(o.weight))} кг · ${fmt3(o.volume)} м³</small>
+      </div>
+      <button class="danger" style="padding:8px 11px" onclick="removeOrder(${o.id})">×</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function removeOrder(id) {
+  selected.delete(id);
+  renderOrders();
+  calculate();
+  toast('Заказ удалён из консолидации');
+}
+
+function getContainer() {
+  return DATA.containers.find(c => String(c.id) === String($('container').value)) || DATA.containers[0];
+}
+
+function calculate(showToast=false) {
+  const arr = selectedOrders();
+  const c = getContainer();
+
+  const totalWeight = arr.reduce((s,o) => s + o.weight, 0);
+  const totalVolume = arr.reduce((s,o) => s + o.volume, 0);
+  const totalBoxes = arr.reduce((s,o) => s + o.boxes, 0);
+  const pv = totalVolume / c.volume;
+  const pm = totalWeight / c.payload;
+  const pn = arr.length ? 1 : 0;
+  const f = 0.6 * Math.min(pv, 1) + 0.3 * Math.min(pm, 1) + 0.1 * pn;
+
+  $('sumOrders').textContent = arr.length;
+  $('sumBoxes').textContent = totalBoxes;
+  $('sumWeight').textContent = fmt.format(Math.round(totalWeight)) + ' кг';
+  $('sumVolume').textContent = fmt1(totalVolume) + ' м³';
+  $('kpiScore').textContent = Math.round(f * 100) + '%';
+
+  setBar('pv', pv, true);
+  setBar('pm', pm, true);
+  setBar('f', f, false);
+  drawPreview(arr, c, pv, pm);
+  updateRecommendation(arr, c, pv, pm, f);
+
+  if (showToast) toast('Расчёт загрузки обновлён');
+  return { arr, c, totalWeight, totalVolume, totalBoxes, pv, pm, f };
+}
+
+function setBar(prefix, value, percentMode) {
+  const pct = Math.round(value * 100);
+  $(prefix + 'Text').textContent = prefix === 'f' ? value.toFixed(2) : pct + '%';
+  const bar = $(prefix + 'Bar');
+  bar.style.width = Math.min(Math.max(pct, 0), 100) + '%';
+  bar.classList.toggle('warn', value > 1 || (prefix === 'f' && value < .55 && value > 0));
+}
+
+function updateRecommendation(arr, c, pv, pm, f) {
+  const r = $('recommendation');
+  r.className = 'message';
+
+  if (!arr.length) {
+    r.textContent = 'Выберите заказы со статусом «Груз готов» для расчёта.';
+    return;
+  }
+
+  if (pv > 1 || pm > 1) {
+    r.classList.add('bad');
+    r.textContent = 'Превышены ограничения выбранного контейнера. Уберите часть заказов или выберите другой тип контейнера.';
+  } else if (f >= .72 || pv >= .72 || pm >= .72) {
+    r.classList.add('ok');
+    r.textContent = 'Оптимальная консолидация: контейнер загружен достаточно плотно, ограничений по весу и объёму нет.';
+  } else if (f < .48) {
+    r.classList.add('warn');
+    r.textContent = 'Загрузка низкая. Рекомендуется добавить ещё заказы с тем же портом и близкой датой отгрузки.';
+  } else {
+    r.textContent = 'Загрузка допустимая, но есть потенциал дозаполнения контейнера.';
+  }
+}
+
+function drawPreview(arr, c, pv, pm) {
+  const el = $('preview');
+  el.querySelectorAll('.box,.preview-warn').forEach(x => x.remove());
+
+  let x = 18, y = 48, rowH = 0;
+  const scale = 200 / c.volume;
+
+  arr.forEach((o, i) => {
+    const area = Math.max(18, o.volume * scale);
+    const w = Math.min(128, Math.max(32, area * 1.6));
+    const h = Math.min(56, Math.max(19, area / 2.1));
+
+    if (x + w > el.clientWidth - 18) {
+      x = 18;
+      y += rowH + 10;
+      rowH = 0;
+    }
+
+    if (y + h > el.clientHeight - 18) return;
+
+    const b = document.createElement('div');
+    b.className = 'box';
+    b.style.left = x + 'px';
+    b.style.top = y + 'px';
+    b.style.width = w + 'px';
+    b.style.height = h + 'px';
+    b.title = `${o.number} · ${o.product} · ${fmt3(o.volume)} м³`;
+    el.appendChild(b);
+
+    x += w + 8;
+    rowH = Math.max(rowH, h);
+  });
+
+  if (pv > 1 || pm > 1) {
+    const warn = document.createElement('div');
+    warn.className = 'preview-warn';
+    warn.style.cssText = 'position:absolute;right:12px;bottom:12px;background:#fee2e2;color:#991b1b;padding:9px 11px;border-radius:13px;font-size:12px;font-weight:900';
+    warn.textContent = 'Превышение лимита';
+    el.appendChild(warn);
+  }
+}
+
+function showOnlyReady() {
+  $('status').value = 'Груз готов';
+  renderOrders();
+  toast('Показаны только грузы со статусом «Груз готов»');
+}
+
+function clearFilters() {
+  $('search').value = '';
+  $('status').value = '';
+  $('port').value = '';
+  $('supplier').value = '';
+  $('dateFrom').value = '';
+  renderOrders();
+  toast('Фильтры очищены');
+}
+
+function selectFilteredReady() {
+  const rows = getFiltered().filter(isReady);
+  rows.forEach(o => selected.add(o.id));
+  renderOrders();
+  calculate();
+  toast(`Добавлено готовых заказов: ${rows.length}`);
+}
+
+function selectOptimalSet() {
+  const c = getContainer();
+  const rows = getFiltered()
+    .filter(isReady)
+    .sort((a,b) => b.volume - a.volume);
+
+  let totalV = selectedOrders().reduce((s,o) => s + o.volume, 0);
+  let totalW = selectedOrders().reduce((s,o) => s + o.weight, 0);
+  let added = 0;
+
+  for (const o of rows) {
+    if (selected.has(o.id)) continue;
+    if ((totalV + o.volume) <= c.volume * 0.92 && (totalW + o.weight) <= c.payload * 0.92) {
+      selected.add(o.id);
+      totalV += o.volume;
+      totalW += o.weight;
+      added++;
+    }
+    if (totalV / c.volume >= 0.72 || totalW / c.payload >= 0.72) break;
+  }
+
+  renderOrders();
+  calculate();
+  toast(added ? `Автоподбор добавил заказов: ${added}` : 'Не найдено подходящих заказов без превышения лимитов');
+}
+
+function resetSelection() {
+  selected.clear();
+  renderOrders();
+  calculate();
+  toast('Выбор заказов сброшен');
+}
+
+function loadFromDb() {
+  loaded = true;
+  $('status').value = 'Груз готов';
+  renderOrders();
+  toast('Демо-выгрузка из БД выполнена: заказы, товары, коробы и статусы загружены');
+}
+
+function formConsolidation() {
+  const calc = calculate();
+  if (!calc.arr.length) return toast('Сначала выберите заказы');
+  if (calc.pv > 1 || calc.pm > 1) return toast('Нельзя сформировать консолидацию: превышены лимиты контейнера');
+
+  lastExport = buildPayload('ok');
+  $('modalTitle').textContent = 'Консолидация сформирована';
+  $('modalPre').textContent = JSON.stringify(lastExport, null, 2);
+  $('modal').classList.add('show');
+  toast('Сценарий консолидации сформирован');
+}
+
+function buildPayload(status) {
+  const calc = calculate();
+  return {
+    calculation_status: status,
+    container_type: calc.c.code,
+    destination_port: commonPort(calc.arr),
+    planned_ship_date: calc.arr.map(o => o.shipDate).sort()[0] || null,
+    selected_orders_count: calc.arr.length,
+    selected_orders: calc.arr.map(o => ({
+      order_id: o.id,
+      order_number: o.number,
+      supplier: o.supplier,
+      product: o.product,
+      status: o.status,
+      port: o.port,
+      planned_ship_date: o.shipDate,
+      boxes: o.boxes,
+      weight_kg: o.weight,
+      volume_m3: o.volume
+    })),
+    metrics: {
+      total_weight_kg: Number(calc.totalWeight.toFixed(2)),
+      total_volume_m3: Number(calc.totalVolume.toFixed(3)),
+      total_boxes: calc.totalBoxes,
+      load_factor_volume: Number(calc.pv.toFixed(4)),
+      load_factor_weight: Number(calc.pm.toFixed(4)),
+      f_score: Number(calc.f.toFixed(4))
+    }
+  };
+}
+
+function commonPort(arr) {
+  const ports = [...new Set(arr.map(o => o.port))];
+  return ports.length === 1 ? ports[0] : 'mixed';
+}
+
+function exportResult() {
+  const calc = calculate();
+  if (!calc.arr.length) return toast('Сначала выберите заказы для выгрузки');
+
+  lastExport = buildPayload(calc.pv > 1 || calc.pm > 1 ? 'violation' : 'ok');
+  $('modalTitle').textContent = 'JSON результата расчёта';
+  $('modalPre').textContent = JSON.stringify(lastExport, null, 2);
+  $('modal').classList.add('show');
+  toast('JSON результата сформирован');
+}
+
+function downloadJson() {
+  if (!lastExport) return;
+  const blob = new Blob([JSON.stringify(lastExport, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'consolidation_result.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function closeModal(e) {
+  if (e.target.id === 'modal') hideModal();
+}
+function hideModal() {
+  $('modal').classList.remove('show');
+}
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+init();
+</script>
+
+
+</body></html>
