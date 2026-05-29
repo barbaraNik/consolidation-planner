@@ -1,5 +1,5 @@
 ### AS-IS и TO-BE процессы (BPMN)
-assets/process_as_is.svg
+**Папка:** `assets/process_as_is.svg`
 <img width="1879" height="425" alt="image" src="https://github.com/user-attachments/assets/b4ce165a-0500-49d7-adfe-058423e40e1d" />
 
 ## 1. Контекст анализа
