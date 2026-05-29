@@ -91,9 +91,8 @@ consolidation-planner/
 │   ├── 05_nonfunctional_requirements.md # NFR (производительность, безопасность)
 │   ├── 06_data_model.md               # ERD и описание таблиц БД
 │   ├── 07_api_specification.md        # Спецификация API 
-│   ├── 08_business_rules.md           # Бизнес-правила консолидации 
-│   ├── 09_algorithms.md               # Алгоритмы автоподбора и расчёта F-score
-│   └── 10_acceptance_criteria.md      # Критерии приёмки 
+│   ├── 08_algorithms.md               # Алгоритмы автоподбора и расчёта F-score
+│   └── 09_acceptance_criteria.md      # Критерии приёмки 
 ├── sql/
 │   └── schema.sql                     # DDL-скрипт создания БД (PostgreSQL)
 ├── prototype/
