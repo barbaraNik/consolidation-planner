@@ -1,4 +1,5 @@
 # База данных
+<img width="1102" height="956" alt="erd_diagram" src="https://github.com/user-attachments/assets/4ca27bba-d672-4c0c-9fe0-2ae5f04c08f0" />
 
 ## 1. Назначение и цели БД
 
